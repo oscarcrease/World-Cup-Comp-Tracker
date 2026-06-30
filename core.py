@@ -1,9 +1,10 @@
-"""
-Pure logic for the World Cup tracker. No Streamlit here, so it can be unit-tested
-on its own. app.py imports from this module.
-"""
+"""Pure logic and persistence helpers for the World Cup tracker."""
+import base64
 import json
 import os
+from urllib.parse import quote
+
+import requests
 
 ROUND_ORDER = ["R32", "R16", "QF", "SF", "F"]
 
@@ -11,15 +12,15 @@ FLAGS = {
     "Mexico": "🇲🇽", "South Korea": "🇰🇷", "Czechia": "🇨🇿", "South Africa": "🇿🇦",
     "Canada": "🇨🇦", "Switzerland": "🇨🇭", "Bosnia and Herzegovina": "🇧🇦", "Qatar": "🇶🇦",
     "Scotland": "🏴\U000e0067\U000e0062\U000e0073\U000e0063\U000e0074\U000e007f",
-    "Brazil": "🇧🇷", "Morocco": "🇲🇦", "Haiti": "🇭🇹",
-    "USA": "🇺🇸", "Australia": "🇦🇺", "Türkiye": "🇹🇷", "Paraguay": "🇵🇾",
-    "Germany": "🇩🇪", "Ivory Coast": "🇨🇮", "Ecuador": "🇪🇨", "Curaçao": "🇨🇼",
-    "Sweden": "🇸🇪", "Netherlands": "🇳🇱", "Japan": "🇯🇵", "Tunisia": "🇹🇳",
-    "Belgium": "🇧🇪", "Egypt": "🇪🇬", "Iran": "🇮🇷", "New Zealand": "🇳🇿",
-    "Spain": "🇪🇸", "Cape Verde": "🇨🇻", "Saudi Arabia": "🇸🇦", "Uruguay": "🇺🇾",
-    "Norway": "🇳🇴", "France": "🇫🇷", "Senegal": "🇸🇳", "Iraq": "🇮🇶",
-    "Argentina": "🇦🇷", "Austria": "🇦🇹", "Jordan": "🇯🇴", "Algeria": "🇩🇿",
-    "Colombia": "🇨🇴", "DR Congo": "🇨🇩", "Portugal": "🇵🇹", "Uzbekistan": "🇺🇿",
+    "Brazil": "🇧🇷", "Morocco": "🇲🇦", "Haiti": "🇭🇹", "USA": "🇺🇸",
+    "Australia": "🇦🇺", "Türkiye": "🇹🇷", "Paraguay": "🇵🇾", "Germany": "🇩🇪",
+    "Ivory Coast": "🇨🇮", "Ecuador": "🇪🇨", "Curaçao": "🇨🇼", "Sweden": "🇸🇪",
+    "Netherlands": "🇳🇱", "Japan": "🇯🇵", "Tunisia": "🇹🇳", "Belgium": "🇧🇪",
+    "Egypt": "🇪🇬", "Iran": "🇮🇷", "New Zealand": "🇳🇿", "Spain": "🇪🇸",
+    "Cape Verde": "🇨🇻", "Saudi Arabia": "🇸🇦", "Uruguay": "🇺🇾", "Norway": "🇳🇴",
+    "France": "🇫🇷", "Senegal": "🇸🇳", "Iraq": "🇮🇶", "Argentina": "🇦🇷",
+    "Austria": "🇦🇹", "Jordan": "🇯🇴", "Algeria": "🇩🇿", "Colombia": "🇨🇴",
+    "DR Congo": "🇨🇩", "Portugal": "🇵🇹", "Uzbekistan": "🇺🇿",
     "England": "🏴\U000e0067\U000e0062\U000e0065\U000e006e\U000e0067\U000e007f",
     "Ghana": "🇬🇭", "Panama": "🇵🇦", "Croatia": "🇭🇷",
 }
@@ -36,11 +37,37 @@ def load_data(path):
 
 
 def save_data(path, data):
-    """Atomic write so a crash mid-save can't corrupt the file."""
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     os.replace(tmp, path)
+
+
+def github_load_data(repo, token, path="data.json", branch="main"):
+    """Load JSON from a GitHub repository using the Contents API."""
+    url = f"https://api.github.com/repos/{repo}/contents/{quote(path)}"
+    r = requests.get(url, headers={"Authorization": f"Bearer {token}",
+                                   "Accept": "application/vnd.github+json"},
+                     params={"ref": branch}, timeout=20)
+    r.raise_for_status()
+    payload = r.json()
+    return json.loads(base64.b64decode(payload["content"]).decode("utf-8"))
+
+
+def github_save_data(repo, token, data, path="data.json", branch="main",
+                     message="Update World Cup tracker data"):
+    """Commit JSON to GitHub. This makes Streamlit Cloud edits durable."""
+    url = f"https://api.github.com/repos/{repo}/contents/{quote(path)}"
+    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+    current = requests.get(url, headers=headers, params={"ref": branch}, timeout=20)
+    sha = current.json().get("sha") if current.ok else None
+    raw = json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8")
+    body = {"message": message, "content": base64.b64encode(raw).decode("ascii"), "branch": branch}
+    if sha:
+        body["sha"] = sha
+    r = requests.put(url, headers=headers, json=body, timeout=25)
+    r.raise_for_status()
+    return r.json()
 
 
 # ----------------------------- queries ---------------------------------------
@@ -59,22 +86,11 @@ def _find(data, rk, match_id):
     return None
 
 
-def is_real_team(data, name):
-    return name in set(all_teams(data))
-
-
 def match_decided(m):
-    # An explicit winner (e.g. penalties) always counts as decided.
     if m.get("winner"):
         return True
     s1, s2 = m.get("score1"), m.get("score2")
-    if s1 is None or s2 is None:
-        return False
-    # 'final' defaults True so manually entered scores still count; live in-play
-    # matches set final=False so a leading scoreline isn't treated as a result.
-    if not m.get("final", True):
-        return False
-    return s1 != s2
+    return s1 is not None and s2 is not None and m.get("final", True) and s1 != s2
 
 
 def winner_of(m):
@@ -82,14 +98,7 @@ def winner_of(m):
         return m["winner"]
     if not match_decided(m):
         return None
-    s1, s2 = m["score1"], m["score2"]
-    return m["team1"] if s1 > s2 else m["team2"]
-
-
-def is_live(m):
-    """Scores present, but the match isn't final and has no decided winner."""
-    return (m.get("score1") is not None and m.get("score2") is not None
-            and not m.get("final", True) and not m.get("winner"))
+    return m["team1"] if m["score1"] > m["score2"] else m["team2"]
 
 
 def loser_of(m):
@@ -99,39 +108,39 @@ def loser_of(m):
     return m["team2"] if w == m["team1"] else m["team1"]
 
 
+def is_live(m):
+    return bool(m.get("in_play")) or (m.get("score1") is not None and m.get("score2") is not None
+            and not m.get("final", True) and not m.get("winner"))
+
+
 # ------------------------- bracket propagation -------------------------------
-def recompute_feeds(data):
-    """Push each decided match's winner into the slot it feeds, in round order.
-    Only sets slots when there is a winner; never clears a manual entry."""
+def recompute_feeds(data, clear_stale=True):
+    """Rebuild every downstream slot from decided upstream matches."""
+    if clear_stale:
+        for rk in ROUND_ORDER[1:]:
+            for m in data["matches"].get(rk, []):
+                m["team1"] = ""
+                m["team2"] = ""
     for rk in ROUND_ORDER:
         for m in data["matches"].get(rk, []):
             feed = m.get("feeds_to")
-            if not feed:
-                continue
             w = winner_of(m)
-            if not w:
+            if not feed or not w:
                 continue
             nm = _find(data, feed["round"], feed["match"])
-            if nm is None:
-                continue
-            nm["team1" if feed["slot"] == 1 else "team2"] = w
+            if nm:
+                nm["team1" if feed["slot"] == 1 else "team2"] = w
 
 
-def set_match(data, rk, match_id, team1, team2, score1, score2, winner=None, final=True):
-    """Update a single match, then re-propagate the whole bracket."""
+def set_match(data, rk, match_id, team1, team2, score1, score2, winner=None,
+              final=True, pen1=None, pen2=None):
     m = _find(data, rk, match_id)
     if m is None:
         raise KeyError(f"No match {rk}/{match_id}")
-    m["team1"] = team1
-    m["team2"] = team2
-    m["score1"] = score1
-    m["score2"] = score2
-    # Only 'final' when there are actually two scores recorded.
-    m["final"] = bool(final) and score1 is not None and score2 is not None
-    if winner and winner in (team1, team2):
-        m["winner"] = winner
-    else:
-        m["winner"] = None  # let it derive from scores
+    m.update({"team1": team1, "team2": team2, "score1": score1, "score2": score2,
+              "pen1": pen1, "pen2": pen2, "in_play": False,
+              "final": bool(final) and score1 is not None and score2 is not None})
+    m["winner"] = winner if winner in (team1, team2) else None
     recompute_feeds(data)
     return m
 
@@ -142,29 +151,28 @@ def _score_string(m, winner):
     if s1 is None or s2 is None:
         return None
     ws, ls = (s1, s2) if winner == m["team1"] else (s2, s1)
-    return f"{ws}\u2013{ls} (pens)" if ws == ls else f"{ws}\u2013{ls}"
+    p1, p2 = m.get("pen1"), m.get("pen2")
+    if p1 is not None and p2 is not None:
+        wp, lp = (p1, p2) if winner == m["team1"] else (p2, p1)
+        return f"{ws}–{ls} ({wp}–{lp} pen.)"
+    return f"{ws}–{ls}"
 
 
 def compute_team_statuses(data):
-    """Return {team: {status, by, score, round, stage}} for every team.
-    status is 'active' or 'out'. Knockout losses override group-stage flags."""
     teams = set(all_teams(data))
     status = {t: {"status": "active", "by": None, "score": None,
                   "round": None, "stage": None} for t in teams}
-
     for t in data.get("group_stage_out", []):
         if t in status:
             status[t] = {"status": "out", "by": None, "score": None,
                          "round": None, "stage": "Group stage"}
-
     for rk in ROUND_ORDER:
         for m in data["matches"].get(rk, []):
             if not match_decided(m):
                 continue
             w, l = winner_of(m), loser_of(m)
             if l in status:
-                status[l] = {"status": "out", "by": w,
-                             "score": _score_string(m, w),
+                status[l] = {"status": "out", "by": w, "score": _score_string(m, w),
                              "round": round_name(data, rk), "stage": None}
     return status
 
@@ -176,5 +184,4 @@ def player_summary(data, statuses, player):
 
 
 def champion(data):
-    final = data["matches"]["F"][0]
-    return winner_of(final)
+    return winner_of(data["matches"]["F"][0])
