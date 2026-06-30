@@ -1,8 +1,10 @@
 {
   "config": {
     "title": "House World Cup 2026",
-    "subtitle": "Sweepstake tracker · USA · Canada · Mexico",
-    "admin_password": "housecup2026"
+    "subtitle": "Oats JR World Cup Sweepstakes 2026",
+    "admin_password": "housecup2026",
+    "auto_update": true,
+    "auto_update_seconds": 900
   },
   "groups": {
     "A": [
