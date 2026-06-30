@@ -29,9 +29,9 @@ letter-spacing:.08em;color:#9aa5b4;font-size:.72rem;font-weight:800;margin-botto
 .pair{display:flex;flex-direction:column;justify-content:space-around;flex:1;position:relative}.matchup{background:linear-gradient(180deg,#151b24,#10151d);
 border:1px solid #293342;border-radius:12px;overflow:hidden;position:relative;box-shadow:0 7px 20px rgba(0,0,0,.25);margin:5px 0}
 .team{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:8px 10px;font-size:.86rem;color:#e9edf4}.team+.team{border-top:1px solid #26303d}
-.team .tname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.team .tscore{font-variant-numeric:tabular-nums;color:#c3cad5;background:#222b37;border-radius:7px;padding:1px 7px;min-width:24px;text-align:center}
+.team .tname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}.team .tscore{font-variant-numeric:tabular-nums;color:#c3cad5;background:#222b37;border-radius:7px;padding:1px 7px;min-width:24px;text-align:center;font-size:.9rem}.score-stack{display:flex;align-items:center;gap:5px}.pen-score{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:25px;color:#b8c2cf;font-size:.66rem;line-height:.78rem}.pen-score b{font-size:.72rem;color:#dce3ec}.pen-score small{font-size:.48rem;text-transform:uppercase;letter-spacing:.04em}.flag-icon{width:18px;height:13px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.13);flex:0 0 auto}
 .team.win{font-weight:800;background:var(--winbg);box-shadow:inset 3px 0 0 var(--win)}.team.win .tscore{color:#bff8dd;background:#174638}.team.tbd .tname{color:#7c8795;font-style:italic}
-.match-meta{font-size:.64rem;color:#7f8a99;text-align:center;padding:3px 7px 5px;border-top:1px solid #222b36}.pen-note{font-size:.58rem;color:#a8b1bd;margin-left:4px}
+.match-meta{font-size:.64rem;color:#7f8a99;text-align:center;padding:3px 7px 5px;border-top:1px solid #222b36}.shootout-note{color:#aeb8c5;margin-left:6px}
 .round:not(:last-child) .matchup::after{content:"";position:absolute;left:100%;top:50%;width:9px;height:2px;background:var(--line)}
 .round:not(:first-child) .matchup::before{content:"";position:absolute;right:100%;top:50%;width:9px;height:2px;background:var(--line)}
 .round:not(:last-child) .pair::after{content:"";position:absolute;left:100%;top:25%;bottom:25%;width:2px;background:var(--line);transform:translateX(9px)}
@@ -39,10 +39,10 @@ border:1px solid #293342;border-radius:12px;overflow:hidden;position:relative;bo
 .grid-players{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:13px}.pcard{background:linear-gradient(180deg,#151b24,#10151d);border:1px solid #293342;border-radius:14px;padding:14px 15px;box-shadow:0 7px 20px rgba(0,0,0,.22)}
 .pcard.loser{border:2px solid var(--danger);background:linear-gradient(180deg,#2b1117,#170c10)}.loser-banner{font-size:1.1rem;font-weight:950;color:#ff5b69;text-transform:uppercase;text-align:center;margin:3px 0 10px;letter-spacing:.04em}
 .phead{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #293342;padding-bottom:.55rem;margin-bottom:.55rem}.person{display:flex;align-items:center;gap:9px}.avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #344154;background:#222b37}.avatar-fallback{display:flex;align-items:center;justify-content:center;font-weight:900;color:#cbd5e1}
-.pname{font-weight:850;color:#fff}.pscore{font-size:.75rem;font-weight:800;color:#b8f7dc;background:#14392f;border-radius:999px;padding:.15rem .55rem}.pteam{padding:.32rem 0;border-bottom:1px dashed #293342}.pteam:last-child{border:0}.pt-name{color:#edf1f7;font-weight:650}.pteam.out .pt-name{color:#7f8996;text-decoration:line-through}.pt-sub{font-size:.7rem;color:#ff7b87;margin-top:1px}
+.pname{font-weight:850;color:#fff}.pscore{font-size:.75rem;font-weight:800;color:#b8f7dc;background:#14392f;border-radius:999px;padding:.15rem .55rem}.pteam{padding:.32rem 0;border-bottom:1px dashed #293342}.pteam:last-child{border:0}.pt-name,.grow .tname{display:flex;align-items:center;gap:6px}.pt-name{color:#edf1f7;font-weight:650}.pteam.out .pt-name{color:#7f8996;text-decoration:line-through}.pt-sub{font-size:.7rem;color:#ff7b87;margin-top:1px}
 .lead{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:.9rem}.lchip{background:#151d28;border:1px solid #2c3746;border-radius:999px;padding:.3rem .7rem;color:#d9e0e9;font-size:.82rem;font-weight:700}
 .grid-groups{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}.gcard{background:#111720;border:1px solid #293342;border-radius:11px;padding:10px}.gcard h4{color:#70e4b5;margin:0 0 6px}.grow{display:flex;justify-content:space-between;color:#e7ebf2;font-size:.82rem;padding:2px}.grow.out{color:#77818f;text-decoration:line-through}
-.wc-champ{display:inline-block;background:linear-gradient(90deg,#facc15,#f59e0b);color:#291d00;font-weight:900;padding:.35rem .8rem;border-radius:999px;margin-bottom:1rem}
+.wc-champ{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(90deg,#facc15,#f59e0b);color:#291d00;font-weight:900;padding:.35rem .8rem;border-radius:999px;margin-bottom:1rem}
 div[data-testid="stTextInput"] input,div[data-testid="stNumberInput"] input,div[data-baseweb="select"]>div,textarea{background:#111720!important;color:#f4f7fb!important;border-color:#303b4a!important}
 </style>"""
 st.markdown(CSS, unsafe_allow_html=True)
@@ -63,10 +63,16 @@ def load_data():
     repo, token, branch, path = persistence_settings()
     if repo and token:
         try:
-            return core.github_load_data(repo, token, path, branch)
+            data = core.github_load_data(repo, token, path, branch)
         except Exception as e:
             st.warning(f"GitHub data could not be loaded; using local data. {e}")
-    return core.load_data(DATA_PATH)
+            data = core.load_data(DATA_PATH)
+    else:
+        data = core.load_data(DATA_PATH)
+    # Automatically migrate the old chronological/index bracket into FIFA's
+    # official match-number topology. This fixes wrong visual feeder pairings.
+    core.ensure_official_bracket(data)
+    return data
 
 def save_data(data, message="Update World Cup tracker"):
     core.save_data(DATA_PATH, data)
@@ -82,17 +88,54 @@ def sydney_time(utc_text):
     except Exception:
         return ""
 
+def flag_html(team):
+    """Render a real flag image instead of a platform-dependent emoji."""
+    code = core.flag_code(team)
+    if not code:
+        return ""
+    return (f'<img class="flag-icon" src="https://flagcdn.com/w40/{esc(code)}.png" '
+            f'alt="{esc(team)} flag" loading="lazy">')
+
+
+def team_name_html(team):
+    if not team:
+        return "TBD"
+    flag = flag_html(team)
+    return f'{flag}<span>{esc(team)}</span>'
+
 def match_card_html(m):
-    w = core.winner_of(m); t1,t2=m.get("team1") or "",m.get("team2") or ""
-    s1="" if m.get("score1") is None else m["score1"]; s2="" if m.get("score2") is None else m["score2"]
-    p1,p2=m.get("pen1"),m.get("pen2")
-    def row(team,score,pen):
-        label=f"{core.flag(team)} {esc(team)}".strip() if team else "TBD"
-        pen_html=f'<span class="pen-note">({esc(pen)} pen.)</span>' if pen is not None else ""
-        return f'<div class="team{" win" if w==team and team else ""}{" tbd" if not team else ""}"><span class="tname">{label}</span><span><span class="tscore">{esc(score)}</span>{pen_html}</span></div>'
-    badge='<span class="live-badge">LIVE</span>' if core.is_live(m) else ""
-    mt=sydney_time(m.get("utc_date")); meta=f'<div class="match-meta">{esc(mt)}</div>' if mt else ""
-    return f'<div class="matchup">{badge}{row(t1,s1,p1)}{row(t2,s2,p2)}{meta}</div>'
+    winner = core.winner_of(m)
+    team1, team2 = m.get("team1") or "", m.get("team2") or ""
+    score1 = "" if m.get("score1") is None else m["score1"]
+    score2 = "" if m.get("score2") is None else m["score2"]
+    pen1, pen2 = m.get("pen1"), m.get("pen2")
+
+    def row(team, score, penalties):
+        # Normally the large score is the score after play (90/120 minutes) and
+        # the small score is the shootout. If a provider supplies only shootout
+        # numbers, use them as the large score and label the match below.
+        fallback_to_penalties = score == "" and penalties is not None
+        big_score = penalties if fallback_to_penalties else score
+        pen_html = ""
+        if penalties is not None and not fallback_to_penalties:
+            pen_html = (f'<span class="pen-score"><b>{esc(penalties)}</b>'
+                        f'<small>pens</small></span>')
+        label = team_name_html(team)
+        classes = f'{" win" if winner == team and team else ""}{" tbd" if not team else ""}'
+        return (f'<div class="team{classes}"><span class="tname">{label}</span>'
+                f'<span class="score-stack"><span class="tscore">{esc(big_score)}</span>'
+                f'{pen_html}</span></div>')
+
+    badge = '<span class="live-badge">LIVE</span>' if core.is_live(m) else ""
+    match_time = sydney_time(m.get("utc_date"))
+    shootout = pen1 is not None and pen2 is not None
+    meta_bits = []
+    if match_time:
+        meta_bits.append(esc(match_time))
+    if shootout:
+        meta_bits.append('<span class="shootout-note">Decided on penalties</span>')
+    meta = f'<div class="match-meta">{" · ".join(meta_bits)}</div>' if meta_bits else ""
+    return f'<div class="matchup">{badge}{row(team1, score1, pen1)}{row(team2, score2, pen2)}{meta}</div>'
 
 def bracket_html(data):
     cols=[]
@@ -116,9 +159,9 @@ def players_html(data,statuses):
         for t in s["teams"]:
             info=statuses.get(t,{"status":"active"})
             if info["status"]=="out":
-                sub="Eliminated · Group stage" if info.get("stage")=="Group stage" else " · ".join(x for x in [f'Knocked out by {core.flag(info.get("by"))} {esc(info.get("by"))}',esc(info.get("score") or ""),esc(info.get("round") or "")] if x)
-                rows.append(f'<div class="pteam out"><div class="pt-name">{core.flag(t)} {esc(t)}</div><div class="pt-sub">{sub}</div></div>')
-            else: rows.append(f'<div class="pteam"><div class="pt-name">{core.flag(t)} {esc(t)}</div></div>')
+                sub="Eliminated · Group stage" if info.get("stage")=="Group stage" else " · ".join(x for x in [f'Knocked out by {flag_html(info.get("by"))}<span>{esc(info.get("by"))}</span>',esc(info.get("score") or ""),esc(info.get("round") or "")] if x)
+                rows.append(f'<div class="pteam out"><div class="pt-name">{team_name_html(t)}</div><div class="pt-sub">{sub}</div></div>')
+            else: rows.append(f'<div class="pteam"><div class="pt-name">{team_name_html(t)}</div></div>')
         lost_all=s["total"]>0 and s["alive"]==0
         banner=f'<div class="loser-banner">{esc(name)} is a loser</div>' if lost_all else ""
         cards.append(f'<div class="pcard{" loser" if lost_all else ""}">{banner}<div class="phead"><div class="person">{avatar_html(name,data)}<span class="pname">{esc(name)}</span></div><span class="pscore">{s["alive"]}/{s["total"]} alive</span></div>{"".join(rows)}</div>')
@@ -127,7 +170,7 @@ def players_html(data,statuses):
 def group_stage_html(data,statuses):
     cards=[]
     for g,teams in data["groups"].items():
-        rows="".join(f'<div class="grow{" out" if statuses.get(t,{}).get("status")=="out" else ""}"><span>{core.flag(t)} {esc(t)}</span></div>' for t in teams)
+        rows="".join(f'<div class="grow{" out" if statuses.get(t,{}).get("status")=="out" else ""}"><span class="tname">{team_name_html(t)}</span></div>' for t in teams)
         cards.append(f'<div class="gcard"><h4>Group {esc(g)}</h4>{rows}</div>')
     return '<div class="grid-groups">'+"".join(cards)+"</div>"
 
@@ -137,7 +180,10 @@ def do_live_sync(data,quiet=False):
     payload=live.fetch_raw(key,comp); report=live.apply_live(data,live.parse_matches(payload))
     data["last_sync"]=datetime.now(timezone.utc).isoformat(timespec="seconds")
     save_data(data,"Automatic World Cup score sync")
-    if not quiet: st.success(f"Updated {report['knockout_set']} fixtures; {report['finished']} final and {report['in_play']} live.")
+    if not quiet:
+        st.success(f"Updated {report['knockout_set']} fixtures; {report['finished']} final and {report['in_play']} live.")
+        if report.get("unmatched_fixtures"):
+            st.warning("Could not place these fixtures in the official bracket: " + "; ".join(report["unmatched_fixtures"]))
     return report
 
 def maybe_auto_sync(data):
@@ -224,7 +270,7 @@ def main():
     st.markdown(f'<div class="wc-h1">⚽ {esc(cfg.get("title","World Cup"))}</div>',unsafe_allow_html=True)
     if cfg.get("subtitle"): st.markdown(f'<div class="wc-sub">{esc(cfg["subtitle"])}</div>',unsafe_allow_html=True)
     champ=core.champion(data)
-    if champ: st.markdown(f'<div class="wc-champ">🏆 Champions: {core.flag(champ)} {esc(champ)}</div>',unsafe_allow_html=True)
+    if champ: st.markdown(f'<div class="wc-champ">🏆 Champions: {flag_html(champ)} {esc(champ)}</div>',unsafe_allow_html=True)
     st.markdown('<div class="section-title">🏆 Knockout bracket</div>',unsafe_allow_html=True); st.markdown(bracket_html(data),unsafe_allow_html=True)
     st.caption("All match times are shown in Sydney time. Times update automatically from the fixture API.")
     st.markdown('<div class="section-title">👥 The housemates</div>',unsafe_allow_html=True); st.markdown(players_html(data,statuses),unsafe_allow_html=True)
