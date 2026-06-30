@@ -89,64 +89,84 @@
     "R32": [
       {
         "id": "R32-1",
-        "team1": "Runner-up A",
-        "team2": "Runner-up B",
-        "score1": null,
-        "score2": null,
-        "winner": null,
+        "team1": "South Africa",
+        "team2": "Canada",
+        "score1": 0,
+        "score2": 1,
+        "winner": "Canada",
         "feeds_to": {
           "round": "R16",
           "match": "R16-1",
           "slot": 1
         },
-        "final": false
+        "final": true,
+        "api_id": 537417,
+        "utc_date": "2026-06-28T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-2",
-        "team1": "Winner C",
-        "team2": "Runner-up F",
-        "score1": null,
-        "score2": null,
-        "winner": null,
+        "team1": "Brazil",
+        "team2": "Japan",
+        "score1": 2,
+        "score2": 1,
+        "winner": "Brazil",
         "feeds_to": {
           "round": "R16",
           "match": "R16-1",
           "slot": 2
         },
-        "final": false
+        "final": true,
+        "api_id": 537423,
+        "utc_date": "2026-06-29T17:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-3",
-        "team1": "Winner E",
-        "team2": "3rd A/B/C/D/F",
-        "score1": null,
-        "score2": null,
-        "winner": null,
+        "team1": "Germany",
+        "team2": "Paraguay",
+        "score1": 4,
+        "score2": 5,
+        "winner": "Paraguay",
         "feeds_to": {
           "round": "R16",
           "match": "R16-2",
           "slot": 1
         },
-        "final": false
+        "final": true,
+        "api_id": 537415,
+        "utc_date": "2026-06-29T20:30:00Z",
+        "in_play": false,
+        "pen1": 3,
+        "pen2": 4
       },
       {
         "id": "R32-4",
-        "team1": "Winner F",
-        "team2": "Runner-up C",
-        "score1": null,
-        "score2": null,
-        "winner": null,
+        "team1": "Netherlands",
+        "team2": "Morocco",
+        "score1": 3,
+        "score2": 4,
+        "winner": "Morocco",
         "feeds_to": {
           "round": "R16",
           "match": "R16-2",
           "slot": 2
         },
-        "final": false
+        "final": true,
+        "api_id": 537418,
+        "utc_date": "2026-06-30T01:00:00Z",
+        "in_play": false,
+        "pen1": 2,
+        "pen2": 3
       },
       {
         "id": "R32-5",
-        "team1": "Runner-up E",
-        "team2": "Runner-up I",
+        "team1": "Ivory Coast",
+        "team2": "Norway",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -155,12 +175,17 @@
           "match": "R16-3",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537424,
+        "utc_date": "2026-06-30T17:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-6",
-        "team1": "Winner I",
-        "team2": "3rd C/D/F/G/H",
+        "team1": "France",
+        "team2": "Sweden",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -169,12 +194,17 @@
           "match": "R16-3",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537416,
+        "utc_date": "2026-06-30T21:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-7",
-        "team1": "Winner A",
-        "team2": "3rd C/E/F/H/I",
+        "team1": "Mexico",
+        "team2": "Ecuador",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -183,12 +213,17 @@
           "match": "R16-4",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537425,
+        "utc_date": "2026-07-01T01:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-8",
-        "team1": "Winner L",
-        "team2": "3rd E/H/I/J/K",
+        "team1": "England",
+        "team2": "DR Congo",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -197,12 +232,17 @@
           "match": "R16-4",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537426,
+        "utc_date": "2026-07-01T16:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-9",
-        "team1": "Winner G",
-        "team2": "3rd A/E/H/I/J",
+        "team1": "Belgium",
+        "team2": "Senegal",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -211,12 +251,17 @@
           "match": "R16-5",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537422,
+        "utc_date": "2026-07-01T20:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-10",
-        "team1": "Winner D",
-        "team2": "3rd B/E/F/I/J",
+        "team1": "USA",
+        "team2": "Bosnia and Herzegovina",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -225,12 +270,17 @@
           "match": "R16-5",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537421,
+        "utc_date": "2026-07-02T00:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-11",
-        "team1": "Winner H",
-        "team2": "Runner-up J",
+        "team1": "Spain",
+        "team2": "Austria",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -239,12 +289,17 @@
           "match": "R16-6",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537420,
+        "utc_date": "2026-07-02T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-12",
-        "team1": "Runner-up K",
-        "team2": "Runner-up L",
+        "team1": "Portugal",
+        "team2": "Croatia",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -253,12 +308,17 @@
           "match": "R16-6",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537419,
+        "utc_date": "2026-07-02T23:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-13",
-        "team1": "Winner B",
-        "team2": "3rd E/F/G/I/J",
+        "team1": "Switzerland",
+        "team2": "Algeria",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -267,12 +327,17 @@
           "match": "R16-7",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537429,
+        "utc_date": "2026-07-03T03:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-14",
-        "team1": "Runner-up D",
-        "team2": "Runner-up G",
+        "team1": "Australia",
+        "team2": "Egypt",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -281,12 +346,17 @@
           "match": "R16-7",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537428,
+        "utc_date": "2026-07-03T18:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-15",
-        "team1": "Winner J",
-        "team2": "Runner-up H",
+        "team1": "Argentina",
+        "team2": "Cape Verde Islands",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -295,12 +365,17 @@
           "match": "R16-8",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537427,
+        "utc_date": "2026-07-03T22:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R32-16",
-        "team1": "Winner K",
-        "team2": "3rd D/E/I/J/L",
+        "team1": "Colombia",
+        "team2": "Ghana",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -309,14 +384,19 @@
           "match": "R16-8",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537430,
+        "utc_date": "2026-07-04T01:30:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       }
     ],
     "R16": [
       {
         "id": "R16-1",
-        "team1": "",
-        "team2": "",
+        "team1": "Canada",
+        "team2": "Brazil",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -325,12 +405,17 @@
           "match": "QF-1",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537376,
+        "utc_date": "2026-07-04T17:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-2",
-        "team1": "",
-        "team2": "",
+        "team1": "Paraguay",
+        "team2": "Morocco",
         "score1": null,
         "score2": null,
         "winner": null,
@@ -339,11 +424,16 @@
           "match": "QF-1",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537375,
+        "utc_date": "2026-07-04T21:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-3",
-        "team1": "",
+        "team1": "Brazil",
         "team2": "",
         "score1": null,
         "score2": null,
@@ -353,7 +443,12 @@
           "match": "QF-2",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537377,
+        "utc_date": "2026-07-05T20:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-4",
@@ -367,7 +462,12 @@
           "match": "QF-2",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537378,
+        "utc_date": "2026-07-06T00:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-5",
@@ -381,7 +481,12 @@
           "match": "QF-3",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537379,
+        "utc_date": "2026-07-06T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-6",
@@ -395,7 +500,12 @@
           "match": "QF-3",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537380,
+        "utc_date": "2026-07-07T00:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-7",
@@ -409,7 +519,12 @@
           "match": "QF-4",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537381,
+        "utc_date": "2026-07-07T16:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "R16-8",
@@ -423,7 +538,12 @@
           "match": "QF-4",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537382,
+        "utc_date": "2026-07-07T20:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       }
     ],
     "QF": [
@@ -439,7 +559,12 @@
           "match": "SF-1",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537383,
+        "utc_date": "2026-07-09T20:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "QF-2",
@@ -453,7 +578,12 @@
           "match": "SF-1",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537384,
+        "utc_date": "2026-07-10T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "QF-3",
@@ -467,7 +597,12 @@
           "match": "SF-2",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537385,
+        "utc_date": "2026-07-11T21:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "QF-4",
@@ -481,7 +616,12 @@
           "match": "SF-2",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537386,
+        "utc_date": "2026-07-12T01:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       }
     ],
     "SF": [
@@ -497,7 +637,12 @@
           "match": "F-1",
           "slot": 1
         },
-        "final": false
+        "final": false,
+        "api_id": 537387,
+        "utc_date": "2026-07-14T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       },
       {
         "id": "SF-2",
@@ -511,7 +656,12 @@
           "match": "F-1",
           "slot": 2
         },
-        "final": false
+        "final": false,
+        "api_id": 537388,
+        "utc_date": "2026-07-15T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       }
     ],
     "F": [
@@ -523,7 +673,12 @@
         "score2": null,
         "winner": null,
         "feeds_to": null,
-        "final": false
+        "final": false,
+        "api_id": 537390,
+        "utc_date": "2026-07-19T19:00:00Z",
+        "in_play": false,
+        "pen1": null,
+        "pen2": null
       }
     ]
   },
@@ -589,5 +744,25 @@
       "Croatia"
     ]
   },
-  "group_stage_out": []
+  "group_stage_out": [
+    "South Korea",
+    "Czechia",
+    "Qatar",
+    "Scotland",
+    "Haiti",
+    "Türkiye",
+    "Curaçao",
+    "Tunisia",
+    "Iran",
+    "New Zealand",
+    "Cape Verde",
+    "Saudi Arabia",
+    "Uruguay",
+    "Iraq",
+    "Jordan",
+    "Uzbekistan",
+    "Panama"
+  ],
+  "player_photos": {},
+  "last_sync": "2026-06-30T07:25:59+00:00"
 }
