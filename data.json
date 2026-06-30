@@ -1,0 +1,593 @@
+{
+  "config": {
+    "title": "House World Cup 2026",
+    "subtitle": "Sweepstake tracker · USA · Canada · Mexico",
+    "admin_password": "housecup2026"
+  },
+  "groups": {
+    "A": [
+      "Mexico",
+      "South Korea",
+      "Czechia",
+      "South Africa"
+    ],
+    "B": [
+      "Canada",
+      "Switzerland",
+      "Bosnia and Herzegovina",
+      "Qatar"
+    ],
+    "C": [
+      "Scotland",
+      "Brazil",
+      "Morocco",
+      "Haiti"
+    ],
+    "D": [
+      "USA",
+      "Australia",
+      "Türkiye",
+      "Paraguay"
+    ],
+    "E": [
+      "Germany",
+      "Ivory Coast",
+      "Ecuador",
+      "Curaçao"
+    ],
+    "F": [
+      "Sweden",
+      "Netherlands",
+      "Japan",
+      "Tunisia"
+    ],
+    "G": [
+      "Belgium",
+      "Egypt",
+      "Iran",
+      "New Zealand"
+    ],
+    "H": [
+      "Spain",
+      "Cape Verde",
+      "Saudi Arabia",
+      "Uruguay"
+    ],
+    "I": [
+      "Norway",
+      "France",
+      "Senegal",
+      "Iraq"
+    ],
+    "J": [
+      "Argentina",
+      "Austria",
+      "Jordan",
+      "Algeria"
+    ],
+    "K": [
+      "Colombia",
+      "DR Congo",
+      "Portugal",
+      "Uzbekistan"
+    ],
+    "L": [
+      "England",
+      "Ghana",
+      "Panama",
+      "Croatia"
+    ]
+  },
+  "round_names": {
+    "R32": "Round of 32",
+    "R16": "Round of 16",
+    "QF": "Quarter-finals",
+    "SF": "Semi-finals",
+    "F": "Final"
+  },
+  "matches": {
+    "R32": [
+      {
+        "id": "R32-1",
+        "team1": "Runner-up A",
+        "team2": "Runner-up B",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-1",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-2",
+        "team1": "Winner C",
+        "team2": "Runner-up F",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-1",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-3",
+        "team1": "Winner E",
+        "team2": "3rd A/B/C/D/F",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-2",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-4",
+        "team1": "Winner F",
+        "team2": "Runner-up C",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-2",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-5",
+        "team1": "Runner-up E",
+        "team2": "Runner-up I",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-3",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-6",
+        "team1": "Winner I",
+        "team2": "3rd C/D/F/G/H",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-3",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-7",
+        "team1": "Winner A",
+        "team2": "3rd C/E/F/H/I",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-4",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-8",
+        "team1": "Winner L",
+        "team2": "3rd E/H/I/J/K",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-4",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-9",
+        "team1": "Winner G",
+        "team2": "3rd A/E/H/I/J",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-5",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-10",
+        "team1": "Winner D",
+        "team2": "3rd B/E/F/I/J",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-5",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-11",
+        "team1": "Winner H",
+        "team2": "Runner-up J",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-6",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-12",
+        "team1": "Runner-up K",
+        "team2": "Runner-up L",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-6",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-13",
+        "team1": "Winner B",
+        "team2": "3rd E/F/G/I/J",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-7",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-14",
+        "team1": "Runner-up D",
+        "team2": "Runner-up G",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-7",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R32-15",
+        "team1": "Winner J",
+        "team2": "Runner-up H",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-8",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R32-16",
+        "team1": "Winner K",
+        "team2": "3rd D/E/I/J/L",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "R16",
+          "match": "R16-8",
+          "slot": 2
+        },
+        "final": false
+      }
+    ],
+    "R16": [
+      {
+        "id": "R16-1",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-1",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R16-2",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-1",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R16-3",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-2",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R16-4",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-2",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R16-5",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-3",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R16-6",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-3",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "R16-7",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-4",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "R16-8",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "QF",
+          "match": "QF-4",
+          "slot": 2
+        },
+        "final": false
+      }
+    ],
+    "QF": [
+      {
+        "id": "QF-1",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "SF",
+          "match": "SF-1",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "QF-2",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "SF",
+          "match": "SF-1",
+          "slot": 2
+        },
+        "final": false
+      },
+      {
+        "id": "QF-3",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "SF",
+          "match": "SF-2",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "QF-4",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "SF",
+          "match": "SF-2",
+          "slot": 2
+        },
+        "final": false
+      }
+    ],
+    "SF": [
+      {
+        "id": "SF-1",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "F",
+          "match": "F-1",
+          "slot": 1
+        },
+        "final": false
+      },
+      {
+        "id": "SF-2",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": {
+          "round": "F",
+          "match": "F-1",
+          "slot": 2
+        },
+        "final": false
+      }
+    ],
+    "F": [
+      {
+        "id": "F-1",
+        "team1": "",
+        "team2": "",
+        "score1": null,
+        "score2": null,
+        "winner": null,
+        "feeds_to": null,
+        "final": false
+      }
+    ]
+  },
+  "players": {
+    "You": [
+      "Mexico",
+      "Bosnia and Herzegovina",
+      "USA",
+      "Ecuador",
+      "Belgium",
+      "Saudi Arabia",
+      "Argentina",
+      "Portugal"
+    ],
+    "Alex": [
+      "South Korea",
+      "Qatar",
+      "Australia",
+      "Curaçao",
+      "Egypt",
+      "Uruguay",
+      "Austria",
+      "Uzbekistan"
+    ],
+    "Sam": [
+      "Czechia",
+      "Scotland",
+      "Türkiye",
+      "Sweden",
+      "Iran",
+      "Norway",
+      "Jordan",
+      "England"
+    ],
+    "Priya": [
+      "South Africa",
+      "Brazil",
+      "Paraguay",
+      "Netherlands",
+      "New Zealand",
+      "France",
+      "Algeria",
+      "Ghana"
+    ],
+    "Jordan": [
+      "Canada",
+      "Morocco",
+      "Germany",
+      "Japan",
+      "Spain",
+      "Senegal",
+      "Colombia",
+      "Panama"
+    ],
+    "Riley": [
+      "Switzerland",
+      "Haiti",
+      "Ivory Coast",
+      "Tunisia",
+      "Cape Verde",
+      "Iraq",
+      "DR Congo",
+      "Croatia"
+    ]
+  },
+  "group_stage_out": []
+}
