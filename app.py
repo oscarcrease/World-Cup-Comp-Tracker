@@ -3,9 +3,12 @@ import base64
 import html
 import os
 from datetime import datetime, timezone
+from io import BytesIO
 from zoneinfo import ZoneInfo
 
+import requests
 import streamlit as st
+from PIL import Image, ImageOps
 from streamlit_autorefresh import st_autorefresh
 
 import core
@@ -28,8 +31,8 @@ CSS = """
 letter-spacing:.08em;color:#9aa5b4;font-size:.72rem;font-weight:800;margin-bottom:.45rem}.round-body{display:flex;flex-direction:column;justify-content:space-around;flex:1}
 .pair{display:flex;flex-direction:column;justify-content:space-around;flex:1;position:relative}.matchup{background:linear-gradient(180deg,#151b24,#10151d);
 border:1px solid #293342;border-radius:12px;overflow:hidden;position:relative;box-shadow:0 7px 20px rgba(0,0,0,.25);margin:5px 0}
-.team{display:flex;align-items:center;justify-content:space-between;gap:7px;padding:8px 10px;font-size:.86rem;color:#e9edf4}.team+.team{border-top:1px solid #26303d}
-.team .tname{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;align-items:center;gap:6px}.team .tscore{font-variant-numeric:tabular-nums;color:#c3cad5;background:#222b37;border-radius:7px;padding:1px 7px;min-width:24px;text-align:center;font-size:.9rem}.score-stack{display:flex;align-items:center;gap:5px}.pen-score{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:25px;color:#b8c2cf;font-size:.66rem;line-height:.78rem}.pen-score b{font-size:.72rem;color:#dce3ec}.pen-score small{font-size:.48rem;text-transform:uppercase;letter-spacing:.04em}.flag-icon{width:18px;height:13px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.13);flex:0 0 auto}
+.team{display:flex;align-items:center;justify-content:space-between;gap:7px;min-height:43px;padding:7px 10px;font-size:.86rem;color:#e9edf4}.team+.team{border-top:1px solid #26303d}
+.team .tname{min-width:0;flex:1;overflow:hidden;display:block}.team-left{min-width:0;display:flex;align-items:center;gap:6px;overflow:hidden}.team-country{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:0 1 auto}.owner-inline{min-width:0;display:inline-flex;align-items:center;gap:4px;color:#7f8a99;font-size:.60rem;font-weight:500;line-height:1;white-space:nowrap;flex:0 1 auto}.owner-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.owner-avatar{width:19px;height:19px;border-radius:50%;object-fit:cover;border:1px solid #3b4757;background:#222b37;flex:0 0 auto}.owner-avatar-fallback{display:inline-flex;align-items:center;justify-content:center;color:#b6c0cd;font-size:.54rem;font-weight:850}.team .tscore{font-variant-numeric:tabular-nums;color:#c3cad5;background:#222b37;border-radius:7px;padding:1px 7px;min-width:24px;text-align:center;font-size:.9rem}.score-stack{display:flex;align-items:center;gap:5px;flex:0 0 auto}.pen-score{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:25px;color:#b8c2cf;font-size:.66rem;line-height:.78rem}.pen-score b{font-size:.72rem;color:#dce3ec}.pen-score small{font-size:.48rem;text-transform:uppercase;letter-spacing:.04em}.flag-icon{width:18px;height:13px;object-fit:cover;border-radius:2px;box-shadow:0 0 0 1px rgba(255,255,255,.13);flex:0 0 auto}
 .team.win{font-weight:800;background:var(--winbg);box-shadow:inset 3px 0 0 var(--win)}.team.win .tscore{color:#bff8dd;background:#174638}.team.tbd .tname{color:#7c8795;font-style:italic}
 .match-meta{font-size:.64rem;color:#7f8a99;text-align:center;padding:3px 7px 5px;border-top:1px solid #222b36}.shootout-note{color:#aeb8c5;margin-left:6px}
 .round:not(:last-child) .matchup::after{content:"";position:absolute;left:100%;top:50%;width:9px;height:2px;background:var(--line)}
@@ -61,20 +64,36 @@ def persistence_settings():
 
 def load_data():
     repo, token, branch, path = persistence_settings()
+    st.session_state["github_data_read_only"] = False
+    st.session_state["github_data_error"] = ""
     if repo and token:
         try:
             data = core.github_load_data(repo, token, path, branch)
         except Exception as e:
-            st.warning(f"GitHub data could not be loaded; using local data. {e}")
+            # Local fallback keeps the page viewable, but writes are blocked so
+            # an old bundled data.json can never overwrite the user's GitHub data.
+            st.session_state["github_data_read_only"] = True
+            st.session_state["github_data_error"] = str(e)
+            st.error(
+                "GitHub data could not be loaded, so the app is temporarily "
+                "read-only and is showing its bundled backup. " + str(e)
+            )
             data = core.load_data(DATA_PATH)
     else:
         data = core.load_data(DATA_PATH)
     # Automatically migrate the old chronological/index bracket into FIFA's
     # official match-number topology. This fixes wrong visual feeder pairings.
     core.ensure_official_bracket(data)
+    data.setdefault("player_photos", {})
+    _compact_existing_photos(data)
     return data
 
 def save_data(data, message="Update World Cup tracker"):
+    if st.session_state.get("github_data_read_only"):
+        raise RuntimeError(
+            "Save blocked because GitHub data did not load. This protects your "
+            "saved players and photos from being overwritten by the local backup."
+        )
     core.save_data(DATA_PATH, data)
     repo, token, branch, path = persistence_settings()
     if repo and token:
@@ -88,13 +107,36 @@ def sydney_time(utc_text):
     except Exception:
         return ""
 
-def flag_html(team):
-    """Render a real flag image instead of a platform-dependent emoji."""
-    code = core.flag_code(team)
+@st.cache_data(show_spinner=False, ttl=7 * 24 * 60 * 60)
+def _flag_data_uri(code):
+    """Fetch a tiny flag on the server, then embed it directly in the page.
+
+    This avoids the browser/CSP issue that caused country-code letters to appear
+    instead of flags. A failed request returns no flag rather than a broken icon.
+    """
     if not code:
         return ""
-    return (f'<img class="flag-icon" src="https://flagcdn.com/w40/{esc(code)}.png" '
-            f'alt="{esc(team)} flag" loading="lazy">')
+    try:
+        response = requests.get(
+            f"https://flagcdn.com/w40/{code}.png",
+            headers={"User-Agent": "world-cup-comp-tracker"},
+            timeout=8,
+        )
+        response.raise_for_status()
+        if not response.content:
+            return ""
+        return "data:image/png;base64," + base64.b64encode(response.content).decode("ascii")
+    except requests.RequestException:
+        return ""
+
+
+def flag_html(team):
+    """Render a self-contained flag image, or nothing if it cannot be loaded."""
+    src = _flag_data_uri(core.flag_code(team))
+    if not src:
+        return ""
+    return (f'<img class="flag-icon" src="{src}" '
+            f'alt="" aria-hidden="true">')
 
 
 def team_name_html(team):
@@ -103,7 +145,71 @@ def team_name_html(team):
     flag = flag_html(team)
     return f'{flag}<span>{esc(team)}</span>'
 
-def match_card_html(m):
+
+def _photo_data_uri(raw_bytes):
+    """Resize/crop an uploaded photo so data.json stays small and durable."""
+    try:
+        image = Image.open(BytesIO(raw_bytes))
+        image = ImageOps.exif_transpose(image).convert("RGB")
+        width, height = image.size
+        side = min(width, height)
+        left = (width - side) // 2
+        top = (height - side) // 2
+        image = image.crop((left, top, left + side, top + side))
+        image = image.resize((160, 160), Image.Resampling.LANCZOS)
+        output = BytesIO()
+        image.save(output, format="JPEG", quality=82, optimize=True)
+        return "data:image/jpeg;base64," + base64.b64encode(output.getvalue()).decode("ascii")
+    except Exception as exc:
+        raise ValueError("That photo could not be processed. Try a JPG, PNG or WebP image.") from exc
+
+
+def _compact_existing_photos(data):
+    """Shrink older, very large embedded photos in memory when possible."""
+    photos = data.get("player_photos", {})
+    for name, src in list(photos.items()):
+        if not isinstance(src, str) or not src.startswith("data:image/") or len(src) < 120_000:
+            continue
+        try:
+            encoded = src.split(",", 1)[1]
+            photos[name] = _photo_data_uri(base64.b64decode(encoded))
+        except Exception:
+            # Keep the original rather than ever deleting a user's photo.
+            pass
+
+
+def team_owner(data, team):
+    """Return the housemate allocated to a team, if any."""
+    if not team:
+        return None
+    for name, teams in data.get("players", {}).items():
+        if team in teams:
+            return name
+    return None
+
+
+def bracket_team_html(data, team):
+    """Team label plus the owning housemate's small avatar and name."""
+    if not team:
+        return "TBD"
+
+    owner = team_owner(data, team)
+    owner_html = ""
+    if owner:
+        src = data.get("player_photos", {}).get(owner)
+        if src:
+            photo = f'<img class="owner-avatar" src="{src}" alt="{esc(owner)}">'
+        else:
+            initial = esc(owner[:1].upper()) if owner else "?"
+            photo = f'<span class="owner-avatar owner-avatar-fallback">{initial}</span>'
+        owner_html = (f'<span class="owner-inline" title="Owned by {esc(owner)}">{photo}'
+                      f'<span class="owner-name">{esc(owner)}</span></span>')
+
+    return (f'<span class="team-left">{flag_html(team)}'
+            f'<span class="team-country">{esc(team)}</span>{owner_html}</span>')
+
+
+def match_card_html(m, data):
     winner = core.winner_of(m)
     team1, team2 = m.get("team1") or "", m.get("team2") or ""
     score1 = "" if m.get("score1") is None else m["score1"]
@@ -120,11 +226,14 @@ def match_card_html(m):
         if penalties is not None and not fallback_to_penalties:
             pen_html = (f'<span class="pen-score"><b>{esc(penalties)}</b>'
                         f'<small>pens</small></span>')
-        label = team_name_html(team)
+        label = bracket_team_html(data, team)
         classes = f'{" win" if winner == team and team else ""}{" tbd" if not team else ""}'
+        score_html = ""
+        if big_score != "" or pen_html:
+            score_html = (f'<span class="score-stack"><span class="tscore">'
+                          f'{esc(big_score)}</span>{pen_html}</span>')
         return (f'<div class="team{classes}"><span class="tname">{label}</span>'
-                f'<span class="score-stack"><span class="tscore">{esc(big_score)}</span>'
-                f'{pen_html}</span></div>')
+                f'{score_html}</div>')
 
     badge = '<span class="live-badge">LIVE</span>' if core.is_live(m) else ""
     match_time = sydney_time(m.get("utc_date"))
@@ -140,7 +249,7 @@ def match_card_html(m):
 def bracket_html(data):
     cols=[]
     for rk in core.ROUND_ORDER:
-        cards=[match_card_html(m) for m in data["matches"].get(rk,[])]
+        cards=[match_card_html(m, data) for m in data["matches"].get(rk,[])]
         body="".join('<div class="pair">'+"".join(cards[i:i+2])+"</div>" for i in range(0,len(cards),2)) if rk!="F" else "".join(f'<div class="pair">{c}</div>' for c in cards)
         cols.append(f'<div class="round"><div class="round-title">{esc(core.round_name(data,rk))}</div><div class="round-body">{body}</div></div>')
     return '<div class="bracket-scroll"><div class="bracket">'+"".join(cols)+"</div></div>"
@@ -189,6 +298,9 @@ def do_live_sync(data,quiet=False):
 def maybe_auto_sync(data):
     cfg=data.setdefault("config",{})
     if not cfg.get("auto_update",False): return
+    if st.session_state.get("github_data_read_only"):
+        st.sidebar.caption("Auto-update paused until GitHub data can be loaded safely.")
+        return
     interval=max(60,int(cfg.get("auto_update_seconds",90)))
     st_autorefresh(interval=interval*1000,key="wc_auto_refresh")
     last=data.get("last_sync")
@@ -229,7 +341,10 @@ def admin_panel(data):
                 winner=t1 if pen1>pen2 else t2 if pen2>pen1 else None
         if st.button("💾 Save result",type="primary"):
             if played and (not t1 or not t2 or (s1==s2 and winner is None)): st.error("Enter both teams and a valid penalty result.")
-            else: core.set_match(data,rk,mid,t1,t2,s1 if played else None,s2 if played else None,winner,played,pen1,pen2); save_data(data,"Manual match result update"); st.rerun()
+            else:
+                try:
+                    core.set_match(data,rk,mid,t1,t2,s1 if played else None,s2 if played else None,winner,played,pen1,pen2); save_data(data,"Manual match result update"); st.rerun()
+                except Exception as exc: st.error(str(exc))
     with tab_live:
         st.write("The API is polled automatically when enabled, including during live matches. A manual sync is available here.")
         if st.button("📡 Fetch & apply now",type="primary"):
@@ -238,27 +353,36 @@ def admin_panel(data):
     with tab_grp:
         current=set(data.get("group_stage_out",[])); new=[]
         for g,teams in data["groups"].items(): new.extend(st.multiselect(f"Group {g}",teams,default=[t for t in teams if t in current],key=f"g{g}"))
-        if st.button("Save group exits"): data["group_stage_out"]=new; save_data(data,"Update group-stage exits"); st.rerun()
+        if st.button("Save group exits"):
+            try: data["group_stage_out"]=new; save_data(data,"Update group-stage exits"); st.rerun()
+            except Exception as exc: st.error(str(exc))
     with tab_ply:
         edited={}; photos=dict(data.get("player_photos",{}))
         for i,(name,teams) in enumerate(data["players"].items()):
             st.markdown(f"**Player {i+1}**"); c1,c2=st.columns([2,1]); new_name=c1.text_input("Name",name,key=f"pn{i}"); picks=c1.multiselect("Teams",core.all_teams(data),default=teams,key=f"pt{i}"); upload=c2.file_uploader("Photo",type=["png","jpg","jpeg","webp"],key=f"ph{i}")
             edited[new_name]=picks
             if upload:
-                mime=upload.type or "image/jpeg"; photos[new_name]=f"data:{mime};base64,{base64.b64encode(upload.getvalue()).decode('ascii')}"
+                try:
+                    photos[new_name] = _photo_data_uri(upload.getvalue())
+                except ValueError as exc:
+                    c2.error(str(exc))
             elif name in photos and new_name!=name: photos[new_name]=photos.pop(name)
             if c2.checkbox("Remove photo",key=f"rm{i}"): photos.pop(new_name,None)
         if st.button("💾 Save players",type="primary"):
             if len(edited)!=len(data["players"]): st.error("Player names must be unique.")
-            else: data["players"]=edited; data["player_photos"]=photos; save_data(data,"Update players and photos"); st.rerun()
+            else:
+                try: data["players"]=edited; data["player_photos"]=photos; save_data(data,"Update players and photos"); st.rerun()
+                except Exception as exc: st.error(str(exc))
     with tab_set:
         cfg=data.setdefault("config",{}); title=st.text_input("Page title",cfg.get("title","")); subtitle=st.text_input("Subtitle",cfg.get("subtitle","")); pw=st.text_input("Admin password",cfg.get("admin_password",""),type="password")
         auto=st.toggle("Automatically update live results",value=cfg.get("auto_update",False),help="Polls football-data.org and refreshes the bracket. Requires FOOTBALL_DATA_API_KEY in Secrets.")
         secs=st.number_input("Auto-update interval (seconds)",min_value=60,max_value=900,value=max(60,int(cfg.get("auto_update_seconds",90))),step=30)
         if st.button("💾 Save settings",type="primary"):
-            cfg.update({"title":title,"subtitle":subtitle,"admin_password":pw,"auto_update":auto,"auto_update_seconds":int(secs)}); save_data(data,"Update tracker settings"); st.rerun()
+            try: cfg.update({"title":title,"subtitle":subtitle,"admin_password":pw,"auto_update":auto,"auto_update_seconds":int(secs)}); save_data(data,"Update tracker settings"); st.rerun()
+            except Exception as exc: st.error(str(exc))
         repo,token,branch,path=persistence_settings()
-        if repo and token: st.success(f"Durable GitHub persistence is active: {repo}/{path} ({branch}).")
+        if repo and token and not st.session_state.get("github_data_read_only"): st.success(f"Durable GitHub persistence is active: {repo}/{path} ({branch}).")
+        elif repo and token: st.error("GitHub persistence is in safe read-only mode: " + st.session_state.get("github_data_error", "unknown error"))
         else: st.warning("For durable Streamlit Cloud storage, add GITHUB_REPO, GITHUB_TOKEN, GITHUB_BRANCH and GITHUB_DATA_PATH to Secrets. Local files may be lost after sleep or redeploy.")
 
 def main():

@@ -6,7 +6,7 @@ import copy
 import json
 import os
 from functools import lru_cache
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import requests
 
@@ -130,27 +130,168 @@ def save_data(path, data):
     os.replace(tmp, path)
 
 
+def _normalise_github_repo(repo):
+    """Return an ``owner/repository`` value from a secret or GitHub URL."""
+    value = str(repo or "").strip()
+    if not value:
+        raise ValueError("GITHUB_REPO is empty.")
+
+    if "://" in value:
+        parsed = urlparse(value)
+        if parsed.netloc.lower() not in {"github.com", "www.github.com"}:
+            raise ValueError("GITHUB_REPO must be an owner/repository value or a github.com URL.")
+        value = parsed.path
+
+    value = value.strip("/")
+    if value.endswith(".git"):
+        value = value[:-4]
+    pieces = [piece for piece in value.split("/") if piece]
+    if len(pieces) != 2:
+        raise ValueError(
+            "GITHUB_REPO must look like 'owner/repository', for example "
+            "'oscarcrease/World-Cup-Comp-Tracker'."
+        )
+    return "/".join(pieces)
+
+
+def _github_headers(token, media="json"):
+    accepts = {
+        "json": "application/vnd.github+json",
+        "object": "application/vnd.github.object+json",
+        "raw": "application/vnd.github.raw+json",
+    }
+    return {
+        "Authorization": f"Bearer {token}",
+        "Accept": accepts.get(media, accepts["json"]),
+        "X-GitHub-Api-Version": "2022-11-28",
+        "User-Agent": "world-cup-comp-tracker",
+    }
+
+
+def _decode_json_bytes(raw, label):
+    """Decode UTF-8 JSON with a useful error for empty or invalid responses."""
+    if not raw or not raw.strip():
+        raise ValueError(f"{label} is empty.")
+    try:
+        text = raw.decode("utf-8-sig")
+    except UnicodeDecodeError as exc:
+        raise ValueError(f"{label} is not UTF-8 text.") from exc
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"{label} is not valid JSON (line {exc.lineno}, column {exc.colno})."
+        ) from exc
+    if not isinstance(payload, dict):
+        raise ValueError(f"{label} must contain one JSON object.")
+    return payload
+
+
 def github_load_data(repo, token, path="data.json", branch="main"):
-    """Load JSON from a GitHub repository using the Contents API."""
+    """Load tracker JSON from GitHub, including files larger than 1 MB.
+
+    Profile photos are embedded in ``data.json`` and can push it beyond the
+    Contents API's one-megabyte inline-content limit. We first request the file
+    metadata, then read the underlying Git blob by SHA. The blob endpoint always
+    returns Base64 content and supports files up to 100 MB, so this path is much
+    less fragile than calling ``response.json()`` on a raw-file response.
+    """
+    repo = _normalise_github_repo(repo)
+    path = str(path or "data.json").strip().lstrip("/")
+    branch = str(branch or "main").strip()
+    if not path:
+        raise ValueError("GITHUB_DATA_PATH is empty.")
+
     url = f"https://api.github.com/repos/{repo}/contents/{quote(path)}"
-    r = requests.get(
+    metadata_response = requests.get(
         url,
-        headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+        headers=_github_headers(token, media="object"),
         params={"ref": branch},
-        timeout=20,
+        timeout=30,
     )
-    r.raise_for_status()
-    payload = r.json()
-    return json.loads(base64.b64decode(payload["content"]).decode("utf-8"))
+    try:
+        metadata_response.raise_for_status()
+    except requests.HTTPError as exc:
+        status = metadata_response.status_code
+        detail = ""
+        try:
+            detail = (metadata_response.json().get("message") or "").strip()
+        except ValueError:
+            detail = metadata_response.text[:160].strip()
+        suffix = f": {detail}" if detail else ""
+        raise ValueError(
+            f"GitHub could not read {repo}/{path} on branch {branch} "
+            f"(HTTP {status}){suffix}"
+        ) from exc
+    try:
+        metadata = metadata_response.json()
+    except ValueError as exc:
+        raise ValueError(
+            f"GitHub returned an invalid metadata response for {repo}/{path}."
+        ) from exc
+
+    if not isinstance(metadata, dict) or metadata.get("type") not in (None, "file"):
+        raise ValueError(f"GitHub path {repo}/{path} is not a file.")
+
+    # Small files may still be supplied inline by the metadata endpoint.
+    encoded = metadata.get("content") or ""
+    if encoded and metadata.get("encoding") == "base64":
+        try:
+            raw = base64.b64decode(encoded, validate=False)
+        except (ValueError, TypeError) as exc:
+            raise ValueError(f"GitHub returned invalid Base64 for {repo}/{path}.") from exc
+        return _decode_json_bytes(raw, f"GitHub file {repo}/{path}")
+
+    sha = metadata.get("sha")
+    if not sha:
+        raise ValueError(f"GitHub did not return a file SHA for {repo}/{path}.")
+
+    blob_url = metadata.get("git_url") or f"https://api.github.com/repos/{repo}/git/blobs/{sha}"
+    blob_response = requests.get(
+        blob_url,
+        headers=_github_headers(token, media="json"),
+        timeout=60,
+    )
+    try:
+        blob_response.raise_for_status()
+    except requests.HTTPError as exc:
+        raise ValueError(
+            f"GitHub found {repo}/{path}, but could not download its data blob "
+            f"(HTTP {blob_response.status_code})."
+        ) from exc
+    try:
+        blob = blob_response.json()
+    except ValueError as exc:
+        raise ValueError(f"GitHub returned invalid blob metadata for {repo}/{path}.") from exc
+    blob_content = blob.get("content") if isinstance(blob, dict) else None
+    if not blob_content:
+        raise ValueError(f"GitHub returned an empty data blob for {repo}/{path}.")
+    try:
+        raw = base64.b64decode(blob_content, validate=False)
+    except (ValueError, TypeError) as exc:
+        raise ValueError(f"GitHub returned invalid blob content for {repo}/{path}.") from exc
+    return _decode_json_bytes(raw, f"GitHub file {repo}/{path}")
 
 
 def github_save_data(repo, token, data, path="data.json", branch="main",
                      message="Update World Cup tracker data"):
     """Commit JSON to GitHub. This makes Streamlit Cloud edits durable."""
+    repo = _normalise_github_repo(repo)
+    path = str(path or "data.json").strip().lstrip("/")
+    branch = str(branch or "main").strip()
     url = f"https://api.github.com/repos/{repo}/contents/{quote(path)}"
-    headers = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
-    current = requests.get(url, headers=headers, params={"ref": branch}, timeout=20)
-    sha = current.json().get("sha") if current.ok else None
+    headers = _github_headers(token, media="json")
+    object_headers = _github_headers(token, media="object")
+
+    current = requests.get(url, headers=object_headers, params={"ref": branch}, timeout=30)
+    if current.status_code == 404:
+        sha = None
+    else:
+        current.raise_for_status()
+        sha = current.json().get("sha")
+        if not sha:
+            raise ValueError(f"GitHub did not return a SHA for {repo}/{path}.")
+
     raw = json.dumps(data, indent=2, ensure_ascii=False).encode("utf-8")
     body = {
         "message": message,
@@ -159,9 +300,19 @@ def github_save_data(repo, token, data, path="data.json", branch="main",
     }
     if sha:
         body["sha"] = sha
-    r = requests.put(url, headers=headers, json=body, timeout=25)
-    r.raise_for_status()
-    return r.json()
+
+    response = requests.put(url, headers=headers, json=body, timeout=60)
+    # A second browser session can update data.json between the GET and PUT.
+    # Refresh the SHA and retry once instead of losing the admin's save.
+    if response.status_code in (409, 422):
+        latest = requests.get(url, headers=object_headers, params={"ref": branch}, timeout=30)
+        latest.raise_for_status()
+        latest_sha = latest.json().get("sha")
+        if latest_sha:
+            body["sha"] = latest_sha
+            response = requests.put(url, headers=headers, json=body, timeout=60)
+    response.raise_for_status()
+    return response.json()
 
 
 # ----------------------------- bracket model ---------------------------------
