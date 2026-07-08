@@ -369,7 +369,7 @@
         "id": "M86",
         "fifa_match_number": 86,
         "team1": "Argentina",
-        "team2": "Cape Verde Islands",
+        "team2": "Cape Verde",
         "score1": 3,
         "score2": 2,
         "pen1": null,
@@ -641,9 +641,9 @@
         "team2": "Colombia",
         "score1": 0,
         "score2": 0,
-        "pen1": 3,
-        "pen2": 3,
-        "winner": null,
+        "pen1": 4,
+        "pen2": 2,
+        "winner": "Switzerland",
         "final": true,
         "in_play": false,
         "feeds_to": {
@@ -740,7 +740,7 @@
         "id": "M100",
         "fifa_match_number": 100,
         "team1": "Argentina",
-        "team2": "",
+        "team2": "Switzerland",
         "score1": null,
         "score2": null,
         "pen1": null,
@@ -758,7 +758,8 @@
         "last_updated": "2026-07-07T05:20:11Z",
         "status": "TIMED",
         "duration": "REGULAR",
-        "team1_source": "M95"
+        "team1_source": "M95",
+        "team2_source": "M96"
       }
     ],
     "SF": [
